@@ -1,0 +1,25 @@
+@Library('configuredatabase@Aayush-SCRUM-320') _
+
+def deploy = new database.template.deploydbtemplate()
+
+    properties([
+        parameters(
+            [string(defaultValue: 'scylla-v1.2', name: 'version')
+            ]
+        )
+    ])
+
+node {
+   def ansible = tool 'ansible'
+   def credentials_Id = 'token'
+   def version = params.version
+   def git_user_name = 'poojabhanuopstree'
+   def inventory_path = 'ansible/roles/scylla_role/aws_ec2.yml'  
+   def playbook_path = 'ansible/roles/scylla_role/scylla_playbook.yml' 
+   def key_path = '/var/lib/jenkins/Pem_key/snaatak.pem'
+   stage('Clean Workspace'){
+       cleanWs()
+   }
+   
+       deploy.call(credentials_Id, version, git_user_name, inventory_path, playbook_path, key_path)
+}
